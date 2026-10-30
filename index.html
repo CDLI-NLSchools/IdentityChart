@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Identity Chart</title>
+<style>
+  :root{
+    --ink:#1c2430; --muted:#5a6572; --accent:#0b5cad; --accent-dark:#084a8a;
+    --card:#ffffff; --bg:#eef2f6; --line:#d4dce4; --soft:#f4f8fc;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.45;}
+  .wrap{max-width:860px;margin:0 auto;padding:16px 14px 48px;}
+  header{margin:10px 0 6px;}
+  h1{font-size:1.7rem;margin:0 0 2px;}
+  h2{font-size:1.25rem;margin:0 0 4px;}
+  .subtitle{color:var(--muted);font-size:1rem;margin:0 0 10px;}
+  .intro{font-size:1.02rem;margin:0 0 4px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(20,40,60,.06);}
+  .starter{color:var(--muted);margin:0 0 12px;}
+  .idearow{display:flex;gap:8px;align-items:center;margin:8px 0;}
+  .idearow input[type=text]{flex:1 1 auto;min-width:0;padding:9px 10px;font:inherit;font-size:1rem;
+    border:1px solid var(--line);border-radius:8px;min-height:44px;}
+  .namefield{width:100%;padding:10px 12px;font:inherit;font-size:1.15rem;font-weight:600;
+    border:1px solid var(--line);border-radius:8px;min-height:48px;}
+  button{cursor:pointer;font:inherit;border:1px solid var(--accent);background:var(--accent);color:#fff;
+    padding:9px 16px;border-radius:8px;min-height:44px;font-weight:600;}
+  button:hover{background:var(--accent-dark);}
+  button.secondary{background:#fff;color:var(--accent);}
+  button.secondary:hover{background:var(--soft);}
+  button.remove{background:#fff;color:#b3261e;border-color:#d8a49f;padding:9px 12px;flex:0 0 auto;}
+  button.remove:hover{background:#fdf2f1;}
+  button:disabled{opacity:.5;cursor:default;}
+  button:focus-visible,input:focus-visible{outline:3px solid #f2b01e;outline-offset:2px;}
+  .addrow{margin-top:10px;}
+  .actions{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 0;}
+  .summary h2{margin-top:0;}
+  .chart-name{font-size:1.35rem;text-align:center;margin:2px 0 14px;}
+  .chart-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .chart-box{border:2px solid var(--line);border-radius:14px;padding:10px 12px;break-inside:avoid;}
+  .chart-box h3{margin:0 0 6px;font-size:1rem;text-align:center;}
+  .chart-box ul{margin:0;padding-left:18px;}
+  .chart-box li{margin:3px 0;}
+  .chart-box.tone-a{background:#e8f6f9;}
+  .chart-box.tone-b{background:#eef4e2;}
+  .chart-box.tone-c{background:#fdeeda;}
+  .chart-box.tone-d{background:#fdeceb;}
+  .empty-note{color:var(--muted);font-style:italic;text-align:center;margin:4px 0;}
+  .copied{color:var(--accent-dark);font-weight:600;min-height:1.3em;margin:10px 0 0;}
+  .hidden{display:none !important;}
+  @media (max-width:700px){
+    .chart-grid{grid-template-columns:1fr;}
+  }
+  @media (max-width:560px){
+    h1{font-size:1.4rem;}
+    button.remove span.word{display:none;}
+  }
+  @media print{
+    body{background:#fff;}
+    .no-print{display:none !important;}
+    .card{box-shadow:none;border-color:#999;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Identity Chart</h1>
+    <p class="subtitle">Grade 8 STEAM, Body, Mind and Soul, Lesson 14: Identity Chart</p>
+    <p class="intro">Who you are is made up of many parts. Fill in each box below with words or short phrases that describe you. Add as many entries as you like in each box. Your chart stays on this page: nothing is sent anywhere. When you finish, print or copy your chart to keep it with your work.</p>
+  </header>
+
+  <main id="board">
+    <section class="card" aria-labelledby="h-name">
+      <h2 id="h-name">My name</h2>
+      <p class="starter">Type your name here. It goes at the top of your chart.</p>
+      <input type="text" id="nameInput" class="namefield" aria-label="My name" placeholder="Type your name here" autocomplete="off">
+    </section>
+
+    <section class="card" data-section aria-labelledby="h-bio">
+      <h2 id="h-bio">Biology</h2>
+      <p class="starter">How you look: your hair, your height, your features. For example: long black hair, tall, great smile.</p>
+      <div class="ideas"></div>
+      <div class="addrow no-print">
+        <button type="button" class="secondary add-btn">Add another entry</button>
+      </div>
+    </section>
+
+    <section class="card" data-section aria-labelledby="h-bg">
+      <h2 id="h-bg">Background</h2>
+      <p class="starter">Where you are from, and the cultures and beliefs that are part of your life. For example: Gander, NL, immigrant, Christian.</p>
+      <div class="ideas"></div>
+      <div class="addrow no-print">
+        <button type="button" class="secondary add-btn">Add another entry</button>
+      </div>
+    </section>
+
+    <section class="card" data-section aria-labelledby="h-fam">
+      <h2 id="h-fam">Family</h2>
+      <p class="starter">The people in your family. For example: mom, 2 sisters, grandmother.</p>
+      <div class="ideas"></div>
+      <div class="addrow no-print">
+        <button type="button" class="secondary add-btn">Add another entry</button>
+      </div>
+    </section>
+
+    <section class="card" data-section aria-labelledby="h-friends">
+      <h2 id="h-friends">Friends</h2>
+      <p class="starter">Your closest friends. For example: Grace, Eric, Alyson.</p>
+      <div class="ideas"></div>
+      <div class="addrow no-print">
+        <button type="button" class="secondary add-btn">Add another entry</button>
+      </div>
+    </section>
+
+    <section class="card" data-section aria-labelledby="h-pers">
+      <h2 id="h-pers">Personality</h2>
+      <p class="starter">What you are like. For example: outgoing, hard working, funny.</p>
+      <div class="ideas"></div>
+      <div class="addrow no-print">
+        <button type="button" class="secondary add-btn">Add another entry</button>
+      </div>
+    </section>
+
+    <section class="card" data-section aria-labelledby="h-exp">
+      <h2 id="h-exp">Experiences</h2>
+      <p class="starter">Big moments and events in your life. For example: moved to Canada at 4 years old, drama fest provincials, ski trip with school.</p>
+      <div class="ideas"></div>
+      <div class="addrow no-print">
+        <button type="button" class="secondary add-btn">Add another entry</button>
+      </div>
+    </section>
+
+    <section class="card" data-section aria-labelledby="h-dreams">
+      <h2 id="h-dreams">Dreams/Goals</h2>
+      <p class="starter">What you hope to do or become. For example: social worker, learn how to kayak, travel to Asia.</p>
+      <div class="ideas"></div>
+      <div class="addrow no-print">
+        <button type="button" class="secondary add-btn">Add another entry</button>
+      </div>
+    </section>
+
+    <section class="card" data-section aria-labelledby="h-hob">
+      <h2 id="h-hob">Hobbies/Interests</h2>
+      <p class="starter">What you enjoy doing. For example: hiking, painting, listening to music, basketball.</p>
+      <div class="ideas"></div>
+      <div class="addrow no-print">
+        <button type="button" class="secondary add-btn">Add another entry</button>
+      </div>
+    </section>
+
+    <section class="card" data-section aria-labelledby="h-media">
+      <h2 id="h-media">Media</h2>
+      <p class="starter">The apps, shows, games, and accounts that are part of your life. For example: Instagram account, TikTok account.</p>
+      <div class="ideas"></div>
+      <div class="addrow no-print">
+        <button type="button" class="secondary add-btn">Add another entry</button>
+      </div>
+    </section>
+
+    <div class="actions no-print">
+      <button type="button" id="finishBtn">See my identity chart</button>
+    </div>
+  </main>
+
+  <section class="card summary hidden" id="summary" aria-labelledby="h-summary">
+    <h2 id="h-summary">My Identity Chart</h2>
+    <p class="subtitle">Grade 8 STEAM, Body, Mind and Soul, Lesson 14: Identity Chart</p>
+    <div id="summaryBody"></div>
+    <div class="actions no-print">
+      <button type="button" id="printBtn">Print</button>
+      <button type="button" class="secondary" id="copyBtn">Copy</button>
+      <button type="button" class="secondary" id="backBtn">Back to my chart</button>
+    </div>
+    <p class="copied" id="copyNote" role="status" aria-live="polite"></p>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var TONES = ["tone-a", "tone-b", "tone-c", "tone-d", "tone-a", "tone-b", "tone-c", "tone-d", "tone-a"];
+  var sections = Array.prototype.slice.call(document.querySelectorAll("[data-section]"));
+
+  function makeRow(sectionEl) {
+    var row = document.createElement("div");
+    row.className = "idearow";
+    var title = sectionEl.querySelector("h2").textContent;
+    var input = document.createElement("input");
+    input.type = "text";
+    input.setAttribute("aria-label", "Entry for: " + title);
+    input.placeholder = "Type here...";
+    var remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "remove";
+    remove.innerHTML = "&#10005;<span class=\"word\"> Remove</span>";
+    remove.setAttribute("aria-label", "Remove this entry");
+    remove.addEventListener("click", function () {
+      var rows = sectionEl.querySelectorAll(".idearow");
+      if (rows.length <= 1) { return; }
+      row.remove();
+      refreshRemoveButtons(sectionEl);
+    });
+    row.appendChild(input);
+    row.appendChild(remove);
+    return row;
+  }
+
+  function refreshRemoveButtons(sectionEl) {
+    var rows = sectionEl.querySelectorAll(".idearow");
+    var single = rows.length <= 1;
+    Array.prototype.forEach.call(sectionEl.querySelectorAll(".remove"), function (btn) {
+      btn.disabled = single;
+    });
+  }
+
+  sections.forEach(function (sectionEl) {
+    var ideas = sectionEl.querySelector(".ideas");
+    ideas.appendChild(makeRow(sectionEl));
+    ideas.appendChild(makeRow(sectionEl));
+    ideas.appendChild(makeRow(sectionEl));
+    refreshRemoveButtons(sectionEl);
+    sectionEl.querySelector(".add-btn").addEventListener("click", function () {
+      var row = makeRow(sectionEl);
+      ideas.appendChild(row);
+      refreshRemoveButtons(sectionEl);
+      row.querySelector("input").focus();
+    });
+  });
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+  }
+
+  function collectData() {
+    var groups = sections.map(function (sectionEl, i) {
+      var entries = [];
+      Array.prototype.forEach.call(sectionEl.querySelectorAll(".idearow input"), function (input) {
+        var v = input.value.trim();
+        if (v) { entries.push(v); }
+      });
+      return { title: sectionEl.querySelector("h2").textContent, entries: entries, tone: TONES[i % TONES.length] };
+    });
+    return { name: document.getElementById("nameInput").value.trim(), groups: groups };
+  }
+
+  function compileSummaryHtml(data) {
+    var html = "";
+    html += "<h3 class=\"chart-name\">" + escapeHtml(data.name || "My Identity Chart") + "</h3>";
+    html += "<div class=\"chart-grid\">";
+    data.groups.forEach(function (group) {
+      html += "<div class=\"chart-box " + group.tone + "\"><h3>" + escapeHtml(group.title) + "</h3>";
+      if (group.entries.length) {
+        html += "<ul>";
+        group.entries.forEach(function (e) { html += "<li>" + escapeHtml(e) + "</li>"; });
+        html += "</ul>";
+      } else {
+        html += "<p class=\"empty-note\">Nothing added yet.</p>";
+      }
+      html += "</div>";
+    });
+    html += "</div>";
+    return html;
+  }
+
+  function compileSummaryText(data) {
+    var lines = ["My Identity Chart", "Grade 8 STEAM, Body, Mind and Soul, Lesson 14: Identity Chart", ""];
+    lines.push("Name: " + (data.name || "(not typed yet)"));
+    lines.push("");
+    data.groups.forEach(function (group) {
+      lines.push(group.title);
+      if (group.entries.length) {
+        group.entries.forEach(function (e) { lines.push("- " + e); });
+      } else {
+        lines.push("(Nothing added yet.)");
+      }
+      lines.push("");
+    });
+    return lines.join("\n");
+  }
+
+  var board = document.getElementById("board");
+  var summary = document.getElementById("summary");
+  var summaryBody = document.getElementById("summaryBody");
+  var copyNote = document.getElementById("copyNote");
+  var lastData = null;
+
+  document.getElementById("finishBtn").addEventListener("click", function () {
+    lastData = collectData();
+    summaryBody.innerHTML = compileSummaryHtml(lastData);
+    copyNote.textContent = "";
+    board.classList.add("hidden");
+    summary.classList.remove("hidden");
+    document.getElementById("printBtn").focus();
+    window.scrollTo(0, 0);
+  });
+
+  document.getElementById("backBtn").addEventListener("click", function () {
+    summary.classList.add("hidden");
+    board.classList.remove("hidden");
+    document.getElementById("finishBtn").focus();
+    window.scrollTo(0, 0);
+  });
+
+  document.getElementById("printBtn").addEventListener("click", function () {
+    window.print();
+  });
+
+  document.getElementById("copyBtn").addEventListener("click", function () {
+    var text = compileSummaryText(lastData || collectData());
+    function done(ok) {
+      copyNote.textContent = ok ? "Copied. You can paste your chart wherever you keep your work."
+                                : "Copy did not work in this browser. You can print instead.";
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done(true); }, function () { fallback(); });
+    } else {
+      fallback();
+    }
+    function fallback() {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      ta.remove();
+      done(ok);
+    }
+  });
+})();
+</script>
+</body>
+</html>
